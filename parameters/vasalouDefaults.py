@@ -1,0 +1,87 @@
+'''
+Created on May 8, 2014
+
+@author: tsbertalan
+'''
+paramsString = '''
+Rgas = 8.3144622  # gas constant in J/mol/C
+Ffar = 96.4853399  # Faraday constant in J/mV/mol
+EK = -97
+T = 37  # temperature in C
+gKo = 9.7
+vgk = 10
+Kgk = 10
+gNa = 36
+ENa = 45
+vkk = 3.3
+Kkk = .02
+nkk = .1
+vvo = .09
+Kvo = 4.5
+nvo = 4.5
+vVas = 2
+v1 = .0003
+betaIP3 = .5
+VM2 = 149.5
+K2 = 5
+nVasalou = 2.2 
+VM3 = 400
+KRuM = 3
+m = 6
+KA = .67
+p = 4.2
+kf = .001
+Caex = 5
+vCa = 12.3
+KCa = 22
+nCa = 2.2
+vKCa = 3
+KKCa = .16
+nKCa = -1
+EL = -29
+GABAo = .2
+vGABA = 19
+KGABA = 3
+gGABA = 12.3
+Clo = 1
+
+vCl1 = 15.5
+vCl2 = 19
+KCl1 = 4
+KCl2 = 1
+nCl = -.2
+Clex = 114.5
+vex1 = 105
+Kex1 = 574.05
+nex1 = 2.5
+vex2 = 4.4
+Kex2 = 1
+nex2 = -1
+Eex = 0
+PCa = .05
+PNa = .036
+PCl = .3
+Kex = 1
+Naex = 145
+vPK = 1.9
+KPK = 1
+npk = -2
+VR = .41
+KRmV = 34
+vVIP = .5
+KVIP = 15
+nVIP = 1.9
+kdVIP = .5
+ndVIP = .2
+VMK = 5
+KMK = 2.9
+Vbeta = 2
+Kbeta = 2
+CT = 1.6
+Kc = .15
+KD = .08
+K1 = .45
+KAP = .6
+vsp0 = 1
+Cm = 5
+'''
