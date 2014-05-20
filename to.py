@@ -88,13 +88,17 @@ def cellDiff(X, t, ALPHA, RHO, icell, parameters=None, Lt=0.0, L=.2, Lbase=0.0, 
     
     epsilon = p.epsilon
     
-    if (L - Lt) < 0.1 * L:
+    if (L - Lt) < 0.1 * L:  # we're in the dark phase
 #         rho = p.a
 #         assert 'rowsums' in p.__dict__
 #         gamma = p.rowsums[icell] * rho / epsilon
-        beta = 1.0
+        beta = 1.0  # This should amount to the same thing as the above three lines,
+                    #  and is here to match the statement from To et al. that
+                    #  "during light, the VIP release rate was modeled as constant
+                    #   and sufficiently high to cause complete saturation fo VPAC2
+                    #   receptors." 
     else:
-#         gamma = sum([
+#         gamma = sum([  # equivalent to the below, but slower.
 #                          ALPHA[icell,j]*RHO[j]
 #                          for j in range(p.N)
 #                          ]) / epsilon
@@ -133,7 +137,6 @@ def toX0params():
 
 def toX0NetParams(N):
     X0 = np.hstack([toX0params()] * N).tolist()
-#     X0.append(0)  # light level
     return np.array(X0)    
 
 
@@ -175,7 +178,7 @@ def netIntegrate(ALPHA, parameters, initial=None, titleInfo="", nstep=1e3, **kwa
     return saves['fname']
 
 
-def mRNAPlot(X, T, N, Lt, fname, titleInfo=None, show=False):
+def mRNAPlot(X, T, N, Lt, fname, show=False):
     fig, ax = kv.fa(figsize=(10,6))
     X0p = toX0params()
     ncurves = 3
@@ -208,8 +211,6 @@ def mRNAPlot(X, T, N, Lt, fname, titleInfo=None, show=False):
     
     fig.subplots_adjust(left=.05, bottom=.08, right=.9, top=.95)
     
-#     if titleInfo is not None:
-#         ax.set_title(titleInfo)
     if show:
         kv.plotting.show()
     kv.plotting.saveFig(fig, fname)
@@ -240,33 +241,18 @@ def plotSaved(fname, makeMovie=True, titleInfo=None, show=False):
         MP = X.reshape(X.shape[0], d.parameters.N, 17)[j,:,0]
         MPall = X.reshape(X.shape[0], d.parameters.N, 17)[:,:,0]
         
-#         MPfinal = X.reshape(X.shape[0], d.parameters.N, 17)[-1,:,0]
-#         ax.scatter(d.hetVec, MP, label="data", color="blue")
-        
         order = 2
-#         co, ca = kv.dynSys.eqnFree.polyChaos.ndHermite.expansion(hetVec.reshape(parameters.N, 1), MP, p=order)
         degrees = kv.graphs.degreeVec(d.ALPHA).T
-#         fitter = kv.dynSys.eqnFree.polyChaos.basisFit.BasisFitter(d.hetVec, MP, p=order, basisNames=['legendre'])
         fitter2D = kv.dynSys.eqnFree.polyChaos.basisFit.BasisFitter(
                                                     np.vstack((d.hetVec, degrees)).T
                                                                     , MP, p=order, basisNames=['legendre', 'hermite'])
-#         co, ca = fitter.fit(d.hetVec, MP)
         co2D, ca2D = fitter2D.fit(np.vstack((d.hetVec, degrees)).T, MP)
         kv.dynSys.eqnFree.polyChaos.ndHermite.show2DFit(d.hetVec, degrees, MP, ca2D, p=order, show=False,
                                                         figax=(fig, ax), showScatter=True, showSurface=True,
                                                         title="", 
                                                         labels=(d.hetLatex, 'weighted degree', '$M_P$'))
         ax.set_zlim(MPall.min(), MPall.max())
-#         ax.plot(sortable, ca(sortable), label="$O({%s}^{%d})$ legendre fit"
-#                 % (d.hetLatex.replace('$', ''), order),
-#                 color="red")
 
-#         ax.legend(loc="best")
-        
-#         ax.set_xlabel(d.hetLatex + ' ' + d.hetUnits)
-#         ax.set_ylabel(r'$M_P$ [nM]')
-#         ax.set_ylim(0, X.reshape(X.shape[0], d.parameters.N, 17)[:,:,0].max())
-#         ax.set_xlim(hetVec.min(), hetVec.max())
         
         fig.subplots_adjust(left=0, bottom=.16, top=.9, right=.95)
         ax.set_title(r'$t=%.1f$ [hr]' % T[j])
@@ -276,7 +262,6 @@ def plotSaved(fname, makeMovie=True, titleInfo=None, show=False):
     animFig = kv.plotting.plt.figure(figsize=(8,4.5))
     
     animAxes = [
-#                 animFig.add_subplot(1,2,1),
                 animFig.add_subplot(1,1,1, projection='3d')
                 ]
     
@@ -289,7 +274,7 @@ def plotSaved(fname, makeMovie=True, titleInfo=None, show=False):
                                           verbose=True, numAxes=2, show=True, closePlot=False,
                                           )
         kv.plotting.saveFig(animFig, animName+'finalFit', allowPeriod=False)
-    mRNAPlot(d.X, d.T, d.parameters.N, d.LofT, fname, titleInfo=titleInfo, show=show)
+    mRNAPlot(d.X, d.T, d.parameters.N, d.LofT, fname, show=show)
     
     return d.X, d.T
 
@@ -306,7 +291,6 @@ def gaussMesh(N, xsize, ysize, eps=32.0, probScale=1.0, show=False):
     D = np.sqrt((X - X.T) ** 2 + (Y - Y.T) ** 2)
     PROB = probScale * np.exp(-D ** 2 / 2. / eps)
     PROB[PROB > 1] = 1
-#     PROB[PROB == 1] == 0 
     PROB[np.eye(N) == 1] = 0  # no self-connections
     ALPHA = (np.random.uniform(low=0, high=1, size=(N, N)) < PROB).astype(int)
     
@@ -364,9 +348,9 @@ def main(N=16, xsize=128, ysize=128, tmax=72, **kwargs):
     p = ToParameters(forcingShape=None)
     p.loadDefaults()
     p.addFromDict({'N': N})
-#     ALPHA = gaussMesh(N, xsize, ysize)
+#     ALPHA = gaussMesh(N, xsize, ysize)  # an alternate approach--let connection strength die as a Gaussian kernel of distance.
     ALPHA = gridMesh(N, show=False)
-#     ALPHA = np.ones((N,N))
+#     ALPHA = np.ones((N,N))  # indiscriminate all-all connectivity
     out = netIntegrate(ALPHA, p, tmax=tmax, **kwargs)
     stop = time()
     kv.utils.notify('done with %s' % task, '%f min elapsed' % ((stop-start) / 60.))
@@ -409,11 +393,11 @@ def cmdLine():
 
 if __name__ == '__main__':
     from tomSims import setLogLevel
-#     setLogLevel('debug')
+    setLogLevel('debug')  # to display progress information during time-integration
+
 #     result = main(N=32, tmax=4, nstep=1e2)
 #     plotSaved(result, makeMovie=True, show=True)
-#     plotSaved('netIntegrate1400125128', makeMovie=True, show=True)
-#    cmdLine()
-#     plotAll()
-    plotSaved('netIntegrate1400202597', makeMovie=False, show=True)
+
+    cmdLine()
+     
     kv.plotting.show()
