@@ -14,6 +14,7 @@ import kevrekidis as kv
 
 from leloup import LeloupParameters, LofT, leloupX0params
 from leloup import diff as leloupDiff
+import basisFit
 
 
 class ToParameters(LeloupParameters):
@@ -243,7 +244,10 @@ def plotSaved(fname, makeMovie=True, titleInfo=None, show=False):
         
         order = 2
         degrees = kv.graphs.degreeVec(d.ALPHA).T
-        fitter2D = kv.dynSys.eqnFree.polyChaos.basisFit.BasisFitter(
+
+        # The actual PCE fit:
+        #fitter2D = kv.dynSys.eqnFree.polyChaos.basisFit.BasisFitter(
+        fitter2D = basisFit.BasisFitter(
                                                     np.vstack((d.hetVec, degrees)).T
                                                                     , MP, p=order, basisNames=['legendre', 'hermite'])
         co2D, ca2D = fitter2D.fit(np.vstack((d.hetVec, degrees)).T, MP)
