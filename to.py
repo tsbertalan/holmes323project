@@ -377,8 +377,8 @@ def plotAll():
 def cmdLine():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("-N", "--number", type=int, default=4)
-    parser.add_argument("-t", "--tmax", type=float, default=8.0)
+    parser.add_argument("-N", "--number", type=int, required=True)
+    parser.add_argument("-t", "--tmax", type=float, default=8.0, required=True)
     parser.add_argument("--makeMovie", type=bool, default=True)
     parser.add_argument("-l", "--label", type=str, default="", help="extra info to put in the saved file's name")
     parser.add_argument("-f", "--file", type=str, default="", help="Display a file rather than running a simulation.")
